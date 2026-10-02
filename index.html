@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quiz: An toàn trong không gian mạng</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298, #9D50BB, #6E48AA);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  @keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+  }
+  .quiz-container {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 95%;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+  }
+  h1 {
+    margin-bottom: 20px;
+    font-size: 34px;
+  }
+  #question {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    line-height: 1.4;
+  }
+  .answer {
+    display: block;
+    margin: 15px 0;
+    padding: 20px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #000;
+    font-size: 24px;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .answer:hover {
+    background: #ddd;
+    transform: scale(1.03);
+  }
+  .answer.correct {
+    background: #4CAF50 !important;
+    color: #fff;
+  }
+  .answer.wrong {
+    background: #f44336 !important;
+    color: #fff;
+  }
+  .feedback {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 24px;
+    display: none;
+  }
+  .feedback.correct {
+    color: #4CAF50;
+  }
+  .feedback.wrong {
+    color: #f44336;
+    animation: shake 0.4s;
+  }
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-6px); }
+    100% { transform: translateX(0); }
+  }
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  #startBtn {
+    padding: 15px 25px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #ff9800;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+    transition: background 0.2s;
+  }
+  #startBtn:hover {
+    background: #e68900;
+  }
+  .credit {
+    margin-top: 25px;
+    font-size: 16px;
+    font-style: italic;
+    color: #bbb;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+<div class="quiz-container">
+  <h1>Quiz: An toàn trong không gian mạng</h1>
+  <button id="startBtn">🚀 Bắt đầu Quiz </button>
+  <p id="question"></p>
+  <div id="answers"></div>
+  <p id="feedback" class="feedback"></p>
+  <p class="credit">✨ Cre by Haii Phong ✨</p>
+</div>
+
+<!-- Video ẩn ban đầu -->
+<div id="videoSection" style="margin-top:30px; text-align:center; display:none;">
+  <video width="800" controls autoplay loop muted>
+    <source src="2e089e27-e974-4727-91dd-c722a4c1863f.mp4" type="video/mp4">
+    Trình duyệt không hỗ trợ video.
+  </video>
+</div>
+
+<script>
+// ===== DANH SÁCH CÂU HỎI =====
+const questions = [
+  {
+    q: "Năm 1939, sự kiện nào mở đầu Thế chiến II?",
+    answers: ["Đức tấn công Ba Lan", "Nhật tấn công Trân Châu Cảng", "Đức chiếm Paris", "Ý tham gia phe Trục"],
+    correct: "Đức tấn công Ba Lan"
+  },
+  {
+    q: "Năm 1941, sự kiện nào khiến Mỹ tham gia Thế chiến II?",
+    answers: ["Nhật tấn công Trân Châu Cảng", "Đức chiếm Paris", "Đức tấn công Liên Xô", "Ý tham gia phe Trục"],
+    correct: "Nhật tấn công Trân Châu Cảng"
+  },
+  {
+    q: "Trận đánh nào được coi là bước ngoặt trên mặt trận Xô-Đức?",
+    answers: ["Trận Stalingrad", "Trận Berlin", "Trận Moskva", "Trận Kursk"],
+    correct: "Trận Stalingrad"
+  },
+  {
+    q: "Thế chiến II kết thúc vào năm nào?",
+    answers: ["1945", "1940", "1939", "1944"],
+    correct: "1945"
+  },
+  {
+    q: "Hậu quả lớn nhất của Thế chiến II là gì?",
+    answers: ["Hơn 60 triệu người chết", "Khủng hoảng kinh tế toàn cầu", "Phát minh vũ khí hạt nhân", "Mỹ trở thành siêu cường"],
+    correct: "Hơn 60 triệu người chết"
+  },
+  {
+    q: "Quốc gia nào bị Mỹ ném bom nguyên tử vào năm 1945?",
+    answers: ["Nhật Bản", "Đức", "Ý", "Liên Xô"],
+    correct: "Nhật Bản"
+  },
+  {
+    q: "Ai là lãnh đạo của Đức trong Thế chiến II?",
+    answers: ["Adolf Hitler", "Joseph Stalin", "Winston Churchill", "Benito Mussolini"],
+    correct: "Adolf Hitler"
+  },
+  {
+    q: "Nước nào thuộc phe Đồng minh?",
+    answers: ["Liên Xô", "Đức", "Ý", "Nhật Bản"],
+    correct: "Liên Xô"
+  },
+  {
+    q: "Hội nghị Yalta (1945) có sự tham gia của ba cường quốc nào?",
+    answers: ["Mỹ - Liên Xô - Anh", "Mỹ - Đức - Ý", "Anh - Pháp - Đức", "Mỹ - Nhật - Ý"],
+    correct: "Mỹ - Liên Xô - Anh"
+  },
+  {
+    q: "Ngày 2/9/1945 gắn liền với sự kiện gì?",
+    answers: ["Nhật Bản đầu hàng vô điều kiện", "Đức đầu hàng", "Hội nghị Potsdam", "Trận Berlin kết thúc"],
+    correct: "Nhật Bản đầu hàng vô điều kiện"
+  }
+];
+
+let current = 0;
+
+// ===== FULLSCREEN =====
+function openFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+}
+
+// ===== LOAD CÂU HỎI =====
+function loadQuestion() {
+  const q = questions[current];
+  document.getElementById("question").innerText = q.q;
+
+  // Xáo trộn đáp án
+  let shuffled = [...q.answers].sort(() => Math.random() - 0.5);
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+  shuffled.forEach(ans => {
+    const btn = document.createElement("div");
+    btn.className = "answer";
+    btn.innerText = ans;
+    btn.onclick = () => checkAnswer(btn, ans);
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("feedback").style.display = "none";
+}
+
+// ===== KIỂM TRA ĐÁP ÁN =====
+function checkAnswer(button, ans) {
+  const feedback = document.getElementById("feedback");
+  if (ans === questions[current].correct) {
+    button.classList.add("correct");
+    feedback.innerText = "✔ Chính xác!";
+    feedback.className = "feedback correct";
+    feedback.style.display = "block";
+    launchFireworks();
+
+    setTimeout(() => {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        document.getElementById("question").innerText = "🎉 Bạn đã hoàn thành tất cả câu hỏi!";
+        document.getElementById("answers").innerHTML = "";
+        feedback.style.display = "none";
+
+        // Hiện video
+        document.getElementById("videoSection").style.display = "block";
+      }
+    }, 1500);
+  } else {
+    button.classList.add("wrong");
+    feedback.innerText = "✘ Sai rồi, thử lại!";
+    feedback.className = "feedback wrong";
+    feedback.style.display = "block";
+
+    setTimeout(() => button.classList.remove("wrong"), 700);
+  }
+}
+
+// ===== PHÁO HOA =====
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function launchFireworks() {
+  for (let i = 0; i < 40; i++) {
+    particles.push({
+      x: canvas.width/2,
+      y: canvas.height/2,
+      angle: Math.random() * 2 * Math.PI,
+      speed: Math.random() * 5 + 2,
+      radius: Math.random() * 3 + 2,
+      life: 60
+    });
+  }
+}
+
+function animateFireworks() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach((p, i) => {
+    p.x += Math.cos(p.angle) * p.speed;
+    p.y += Math.sin(p.angle) * p.speed;
+    p.life--;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+    ctx.fillStyle = "hsl(" + (Math.random() * 360) + ",100%,50%)";
+    ctx.fill();
+
+    if (p.life <= 0) particles.splice(i, 1);
+  });
+  requestAnimationFrame(animateFireworks);
+}
+animateFireworks();
+
+// ===== START QUIZ =====
+document.getElementById("startBtn").addEventListener("click", () => {
+  openFullscreen();
+  document.getElementById("startBtn").style.display = "none";
+  loadQuestion();
+});
+</script>
+</body>
+</html>
