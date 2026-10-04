@@ -2,348 +2,386 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz: An toàn trong không gian mạng</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298, #9D50BB, #6E48AA);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(-45deg, #160b1d, #24102e, #10091a, #29112f);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
   }
-  @keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  50% {
+    background-position: 100% 50%;
   }
-  .quiz-container {
-    background: rgba(0, 0, 0, 0.85);
-    padding: 40px;
-    border-radius: 20px;
-    max-width: 900px;
-    width: 95%;
-    text-align: center;
-    color: #fff;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
-    position: relative;
-    z-index: 2;
+  100% {
+    background-position: 0% 50%;
   }
-  h1 {
-    margin-bottom: 20px;
-    font-size: 34px;
-  }
-  #question {
-    font-size: 28px;
-    font-weight: bold;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 25px;
-    line-height: 1.4;
-    transform: scale(1);
-    transform-origin: center center;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.45s ease;
-    will-change: transform;
-    position: relative;
-    z-index: 3;
-    overflow: visible;
-  }
-  #question:hover {
-    transform: scale(1.08);
-    text-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 18px rgba(255,255,255,0.3);
-  }
-  .answer {
-    display: block;
-    margin: 15px 0;
-    padding: 20px;
-    background: #f0f0f0;
-    border-radius: 10px;
-    cursor: pointer;
-    color: #000;
-    font-size: 24px;
-    transition: transform 0.2s, background 0.2s;
-  }
-  .answer:hover {
-    background: #ddd;
-    transform: scale(1.03);
-  }
-  .answer.correct {
-    background: #4CAF50 !important;
-    color: #fff;
-  }
-  .answer.wrong {
-    background: #f44336 !important;
-    color: #fff;
-  }
-  .feedback {
-    margin-top: 20px;
-    font-weight: bold;
-    font-size: 24px;
-    display: none;
-  }
-  .feedback.correct {
-    color: #4CAF50;
-  }
-  .feedback.wrong {
-    color: #f44336;
-    animation: shake 0.4s;
-  }
-  @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    50% { transform: translateX(6px); }
-    75% { transform: translateX(-6px); }
-    100% { transform: translateX(0); }
-  }
-  canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-  #startBtn {
-    padding: 15px 25px;
-    font-size: 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #ff9800;
-    color: white;
-    font-weight: bold;
-    margin-bottom: 20px;
-    transition: background 0.2s, transform 0.3s ease;
-  }
-  #startBtn:hover {
-    background: #e68900;
-    transform: scale(1.05);
-  }
-  .credit {
-    margin-top: 25px;
-    font-size: 16px;
-    font-style: italic;
-    color: #bbb;
-  }
+}
+#quiz-container {
+  width: 96%;
+  max-width: 1200px;
+  min-height: 650px;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+h1 {
+  font-size: 42px;
+  margin: 0 0 50px 0;
+}
+#start-btn {
+  padding: 18px 35px;
+  font-size: 26px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: white;
+  color: black;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+#start-btn:hover {
+  transform: scale(1.06);
+  background: #eeeeee;
+}
+#quiz {
+  display: none;
+}
+#question {
+  font-size: 28px;
+  font-weight: bold;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  line-height: 1.4;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.35s ease;
+  will-change: transform;
+  position: relative;
+  z-index: 3;
+  overflow: visible;
+}
+#question:hover {
+  transform: scale(1.08);
+  text-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 18px rgba(255,255,255,0.3);
+}
+#answers {
+  width: 100%;
+}
+.answer {
+  display: block;
+  width: 100%;
+  margin: 15px 0;
+  padding: 20px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #000;
+  font-size: 24px;
+  transition: transform 0.08s ease-out, background 0.08s ease-out, box-shadow 0.08s ease-out;
+  transform: scale(1);
+  transform-origin: center center;
+  will-change: transform;
+  position: relative;
+  z-index: 1;
+}
+.answer:hover {
+  background: #ddd;
+  transform: scale(1.04);
+  box-shadow: 0 4px 18px rgba(255,255,255,0.18);
+  z-index: 5;
+}
+.answer.hover-active {
+  background: #ddd;
+  transform: scale(1.04);
+  box-shadow: 0 4px 18px rgba(255,255,255,0.18);
+  z-index: 5;
+}
+.feedback {
+  font-size: 26px;
+  font-weight: bold;
+  min-height: 35px;
+  margin-top: 20px;
+}
+#credit {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-style: italic;
+  color: #aaa;
+}
+#video-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+#video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#fireworks {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+}
 </style>
 </head>
 <body>
-<canvas id="fireworks"></canvas>
-<div class="quiz-container">
-  <h1>Quiz: An toàn trong không gian mạng</h1>
-  <button id="startBtn">🚀 Bắt đầu Quiz</button>
-  <p id="question"></p>
-  <div id="answers"></div>
-  <p id="feedback" class="feedback"></p>
-  <p class="credit">✨ Cre by Haii Phong ✨</p>
+<div id="quiz-container">
+<h1>Quiz: An toàn trong không gian mạng</h1>
+<button id="start-btn">🚀 Bắt đầu Quiz</button>
+<div id="quiz">
+<p id="question"></p>
+<div id="answers"></div>
+<p id="feedback" class="feedback"></p>
 </div>
-<div id="videoSection" style="margin-top:30px; text-align:center; display:none;">
-  <video width="800" controls autoplay loop muted>
-    <source src="2e089e27-e974-4727-91dd-c722a4c1863f.mp4" type="video/mp4">
-    Trình duyệt không hỗ trợ video.
-  </video>
+<div id="credit">✨ Cre by Haii Phong ✨</div>
+</div>
+<canvas id="fireworks"></canvas>
+<div id="video-container">
+<video id="end-video" controls>
+<source src="2e089e27-e974-4727-91dd-c722a4c1863f.mp4" type="video/mp4">
+</video>
 </div>
 <script>
 const questions = [
-  {
-    q: "Câu 1: Theo tài liệu, thông tin cá nhân bao gồm những gì?",
-    answers: [
-      "A. Chỉ bao gồm họ tên và địa chỉ nhà.",
-      "B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng.",
-      "C. Sở thích cá nhân và thói quen sinh hoạt.",
-      "D. Các phần mềm được cài đặt trên máy tính."
-    ],
-    correct: "B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng."
-  },
-  {
-    q: "Câu 2: Đâu là một trong các biện pháp an toàn để bảo vệ thông tin cá nhân?",
-    answers: [
-      "A. Ghi chép thông tin cá nhân ở bất cứ nơi nào bạn muốn.",
-      "B. Truy cập wifi công cộng thoải mái vì dữ liệu luôn được mã hoá.",
-      "C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền.",
-      "D. Chia sẻ mật khẩu cho nhiều người để tránh quên."
-    ],
-    correct: "C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền."
-  },
-  {
-    q: "Câu 3: Hành vi nào sau đây được coi là bắt nạt trên không gian mạng ở mức độ cao?",
-    answers: [
-      "A. Xỉ vả, lăng nhục.",
-      "B. Đe doạ tung thông tin cá nhân, đưa tin bịa đặt, vu khống, thậm chí tống tiền hoặc ép buộc làm điều xấu.",
-      "C. Không trả lời tin nhắn trên các diễn đàn.",
-      "D. Kết bạn dễ dãi qua mạng."
-    ],
-    correct: "B. Đe doạ tung thông tin cá nhân, đưa tin bịa đặt, vu khống, thậm chí tống tiền hoặc ép buộc làm điều xấu."
-  },
-  {
-    q: "Câu 4: Tác hại nghiêm trọng đến sức khỏe của việc \"nghiện mạng\" (đặc biệt là nghiện chơi game) đã được nhắc đến là gì?",
-    answers: [
-      "A. Mắc các bệnh về mắt do nhìn màn hình quá lâu.",
-      "B. Bị lừa đảo mất toàn bộ tài sản.",
-      "C. Đã từng có thanh niên chơi trò chơi điện tử liên tục nhiều ngày và đột quỵ ngay trên bàn máy tính.",
-      "D. Làm hỏng các phần mềm khác trong máy tính."
-    ],
-    correct: "C. Đã từng có thanh niên chơi trò chơi điện tử liên tục nhiều ngày và đột quỵ ngay trên bàn máy tính."
-  },
-  {
-    q: "Câu 5: Phần mềm độc hại (malware) được định nghĩa như thế nào?",
-    answers: [
-      "A. Là những phần mềm được viết ra với ý đồ xấu, gây hại cho người dùng.",
-      "B. Là phần mềm giúp bảo vệ thông tin cá nhân trên mạng.",
-      "C. Là một loại virus máy tính lây lan qua wifi.",
-      "D. Là phần mềm giúp tăng tốc độ của hệ điều hành."
-    ],
-    correct: "A. Là những phần mềm được viết ra với ý đồ xấu, gây hại cho người dùng."
-  },
-  {
-    q: "Câu 6: Đặc điểm nào dưới đây là của virus máy tính?",
-    answers: [
-      "A. Là một phần mềm hoàn chỉnh có thể hoạt động độc lập.",
-      "B. Chỉ nhằm chiếm quyền sử dụng máy tính, ít chú trọng tính năng lây nhiễm.",
-      "C. Không phải là các phần mềm hoàn chỉnh, mà chỉ là các đoạn mã độc và phải gắn với một phần mềm mới phát tác và lây lan được.",
-      "D. Là phần mềm ngầm ghi lại hoạt động của bàn phím."
-    ],
-    correct: "C. Không phải là các phần mềm hoàn chỉnh, mà chỉ là các đoạn mã độc và phải gắn với một phần mềm mới phát tác và lây lan được."
-  },
-  {
-    q: "Câu 7: Trong các loại phần mềm nội gián (Trojan), phần mềm nào có chức năng ngầm ghi hoạt động của bàn phím và chuột để tìm hiểu người sử dụng máy làm gì?",
-    answers: [
-      "A. Spyware (phần mềm gián điệp)",
-      "B. Keylogger",
-      "C. Backdoor",
-      "D. Rootkit"
-    ],
-    correct: "B. Keylogger"
-  },
-  {
-    q: "Câu 8: Sâu WannaCry (2017) đã gây ra thảm hoạ gì?",
-    answers: [
-      "A. Lừa để lây rất hiệu quả và gây thiệt hại hơn 1 tỉ đô la.",
-      "B. Chiếm quyền các máy chủ Windows trong 10 ngày, gây thiệt hại khoảng 2 tỉ đô la.",
-      "C. Tống tiền bằng cách mã hoá toàn bộ thông tin có trên đĩa cứng và đòi tiền chuộc mới cho phần mềm hoá giải.",
-      "D. Ăn trộm toàn bộ thông tin trong email của người dùng."
-    ],
-    correct: "C. Tống tiền bằng cách mã hoá toàn bộ thông tin có trên đĩa cứng và đòi tiền chuộc mới cho phần mềm hoá giải."
-  },
-  {
-    q: "Câu 9: Hình thức tấn công \"từ chối dịch vụ\" (DOS) được thực hiện như thế nào?",
-    answers: [
-      "A. Cài đặt ngầm một đường cửa sau để chiếm quyền máy tính.",
-      "B. Xóa toàn bộ dữ liệu trên ổ cứng để hệ thống tê liệt.",
-      "C. Gửi email chứa liên kết lừa đảo đến hàng triệu người.",
-      "D. Các phần mềm độc hại nhận lệnh truy cập đồng thời vào một máy chủ định trước, gây quá tải, làm tê liệt máy chủ."
-    ],
-    correct: "D. Các phần mềm độc hại nhận lệnh truy cập đồng thời vào một máy chủ định trước, gây quá tải, làm tê liệt máy chủ."
-  },
-  {
-    q: "Câu 10: Để phòng ngừa phần mềm độc hại, tài liệu khuyên KHÔNG NÊN làm hành động nào sau đây?",
-    answers: [
-      "A. Cẩn thận trọng khi chép các tệp chương trình hay dữ liệu từ ổ cứng rời, thẻ nhớ.",
-      "B. Tải và sử dụng các phần mềm bẻ khoá cho lấy tự do trên mạng (vì chúng thường bị gắn mã độc).",
-      "C. Sử dụng các phần mềm phòng chống phần mềm độc hại.",
-      "D. Gọi điện xác minh với bạn bè nếu nhận được thư yêu cầu nháy vào liên kết."
-    ],
-    correct: "B. Tải và sử dụng các phần mềm bẻ khoá cho lấy tự do trên mạng (vì chúng thường bị gắn mã độc)."
-  }
+{
+question: "Câu 1: Theo tài liệu, thông tin cá nhân bao gồm những gì?",
+answers: [
+"A. Chỉ bao gồm họ tên và địa chỉ nhà.",
+"B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng.",
+"C. Sở thích cá nhân và thói quen sinh hoạt.",
+"D. Các phần mềm được cài đặt trên máy tính."
+],
+correct: "B"
+},
+{
+question: "Câu 2: Đâu là một trong các biện pháp an toàn để bảo vệ thông tin cá nhân?",
+answers: [
+"A. Ghi chép thông tin cá nhân ở bất cứ nơi nào bạn muốn.",
+"B. Truy cập wifi công cộng thoải mái vì dữ liệu luôn được mã hoá.",
+"C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền.",
+"D. Chia sẻ mật khẩu cho nhiều người để tránh quên."
+],
+correct: "C"
+},
+{
+question: "Câu 3: Hành vi nào sau đây được coi là bắt nạt trên không gian mạng ở mức độ cao?",
+answers: [
+"A. Xỉ vả, lăng nhục.",
+"B. Đe doạ tung thông tin cá nhân, đưa tin bịa đặt, vu khống, thậm chí tống tiền hoặc ép buộc làm điều xấu.",
+"C. Không trả lời tin nhắn trên các diễn đàn.",
+"D. Kết bạn dễ dãi qua mạng."
+],
+correct: "B"
+},
+{
+question: "Câu 4: Tác hại nghiêm trọng đến sức khỏe của việc \"nghiện mạng\" (đặc biệt là nghiện chơi game) đã được nhắc đến là gì?",
+answers: [
+"A. Mắc các bệnh về mắt do nhìn màn hình quá lâu.",
+"B. Bị lừa đảo mất toàn bộ tài sản.",
+"C. Đã từng có thanh niên chơi trò chơi điện tử liên tục nhiều ngày và đột quỵ ngay trên bàn máy tính.",
+"D. Làm hỏng các phần mềm khác trong máy tính."
+],
+correct: "C"
+},
+{
+question: "Câu 5: Phần mềm độc hại (malware) được định nghĩa như thế nào?",
+answers: [
+"A. Là những phần mềm được viết ra với ý đồ xấu, gây hại cho người dùng.",
+"B. Là phần mềm giúp bảo vệ thông tin cá nhân trên mạng.",
+"C. Là một loại virus máy tính lây lan qua wifi.",
+"D. Là phần mềm giúp tăng tốc độ của hệ điều hành."
+],
+correct: "A"
+},
+{
+question: "Câu 6: Đặc điểm nào dưới đây là của virus máy tính?",
+answers: [
+"A. Là một phần mềm hoàn chỉnh có thể hoạt động độc lập.",
+"B. Chỉ nhằm chiếm quyền sử dụng máy tính, ít chú trọng tính năng lây nhiễm.",
+"C. Không phải là các phần mềm hoàn chỉnh, mà chỉ là các đoạn mã độc và phải gắn với một phần mềm mới phát tác và lây lan được.",
+"D. Là phần mềm ngầm ghi lại hoạt động của bàn phím."
+],
+correct: "C"
+},
+{
+question: "Câu 7: Trong các loại phần mềm nội gián (Trojan), phần mềm nào có chức năng ngầm ghi hoạt động của bàn phím và chuột để tìm hiểu người sử dụng máy làm gì?",
+answers: [
+"A. Spyware (phần mềm gián điệp)",
+"B. Keylogger",
+"C. Backdoor",
+"D. Rootkit"
+],
+correct: "B"
+},
+{
+question: "Câu 8: Sâu WannaCry (2017) đã gây ra thảm hoạ gì?",
+answers: [
+"A. Lừa để lây rất hiệu quả và gây thiệt hại hơn 1 tỉ đô la.",
+"B. Chiếm quyền các máy chủ Windows trong 10 ngày, gây thiệt hại khoảng 2 tỉ đô la.",
+"C. Tống tiền bằng cách mã hoá toàn bộ thông tin có trên đĩa cứng và đòi tiền chuộc mới cho phần mềm hoá giải.",
+"D. Ăn trộm toàn bộ thông tin trong email của người dùng."
+],
+correct: "C"
+},
+{
+question: "Câu 9: Hình thức tấn công \"từ chối dịch vụ\" (DOS) được thực hiện như thế nào?",
+answers: [
+"A. Cài đặt ngầm một đường cửa sau để chiếm quyền máy tính.",
+"B. Xóa toàn bộ dữ liệu trên ổ cứng để hệ thống tê liệt.",
+"C. Gửi email chứa liên kết lừa đảo đến hàng triệu người.",
+"D. Các phần mềm độc hại nhận lệnh truy cập đồng thời vào một máy chủ định trước, gây quá tải, làm tê liệt máy chủ."
+],
+correct: "D"
+},
+{
+question: "Câu 10: Để phòng ngừa phần mềm độc hại, tài liệu khuyên KHÔNG NÊN làm hành động nào sau đây?",
+answers: [
+"A. Cẩn thận trọng khi chép các tệp chương trình hay dữ liệu từ ổ cứng rời, thẻ nhớ.",
+"B. Tải và sử dụng các phần mềm bẻ khoá cho lấy tự do trên mạng (vì chúng thường bị gắn mã độc).",
+"C. Sử dụng các phần mềm phòng chống phần mềm độc hại.",
+"D. Gọi điện xác minh với bạn bè nếu nhận được thư yêu cầu nháy vào liên kết."
+],
+correct: "B"
+}
 ];
 let current = 0;
-function openFullscreen() {
-  const elem = document.documentElement;
-  if (elem.requestFullscreen) elem.requestFullscreen();
-  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-}
+const startBtn = document.getElementById("start-btn");
+const quiz = document.getElementById("quiz");
+const questionEl = document.getElementById("question");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const quizContainer = document.getElementById("quiz-container");
+const videoContainer = document.getElementById("video-container");
+const endVideo = document.getElementById("end-video");
+startBtn.addEventListener("click", async () => {
+  startBtn.style.display = "none";
+  quiz.style.display = "block";
+  loadQuestion();
+  try {
+    if (document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (error) {
+  }
+});
 function loadQuestion() {
+  feedbackEl.textContent = "";
   const q = questions[current];
-  document.getElementById("question").innerText = q.q;
-  let shuffled = [...q.answers];
-  shuffled.sort(() => Math.random() - 0.5);
-  const answersDiv = document.getElementById("answers");
-  answersDiv.innerHTML = "";
-  shuffled.forEach(ans => {
-    const btn = document.createElement("div");
-    btn.className = "answer";
-    btn.innerText = ans;
-    btn.onclick = () => checkAnswer(btn, ans);
-    answersDiv.appendChild(btn);
+  questionEl.textContent = q.question;
+  answersEl.innerHTML = "";
+  q.answers.forEach(answer => {
+    const div = document.createElement("div");
+    div.className = "answer";
+    div.textContent = answer;
+    div.addEventListener("click", () => checkAnswer(answer));
+    div.addEventListener("pointerenter", () => {
+      div.classList.add("hover-active");
+    });
+    div.addEventListener("pointerleave", () => {
+      div.classList.remove("hover-active");
+    });
+    answersEl.appendChild(div);
   });
-  document.getElementById("feedback").style.display = "none";
 }
-function checkAnswer(button, ans) {
-  const feedback = document.getElementById("feedback");
-  if (ans === questions[current].correct) {
-    button.classList.add("correct");
-    feedback.innerText = "✔ Chính xác!";
-    feedback.className = "feedback correct";
-    feedback.style.display = "block";
-    launchFireworks();
+function checkAnswer(answer) {
+  const q = questions[current];
+  if (answer.startsWith(q.correct + ".")) {
+    feedbackEl.textContent = "✓ Chính xác!";
+    feedbackEl.style.color = "#00ff66";
+    createFireworks();
     setTimeout(() => {
       current++;
       if (current < questions.length) {
         loadQuestion();
       } else {
-        document.getElementById("question").innerText = "🎉 Bạn đã hoàn thành tất cả câu hỏi!";
-        document.getElementById("answers").innerHTML = "";
-        feedback.style.display = "none";
-        document.getElementById("videoSection").style.display = "block";
+        quizContainer.style.display = "none";
+        videoContainer.style.display = "flex";
+        endVideo.play().catch(() => {});
       }
-    }, 1500);
+    }, 900);
   } else {
-    button.classList.add("wrong");
-    feedback.innerText = "✘ Sai rồi, thử lại!";
-    feedback.className = "feedback wrong";
-    feedback.style.display = "block";
-    setTimeout(() => button.classList.remove("wrong"), 700);
+    feedbackEl.textContent = "✗ Sai rồi!";
+    feedbackEl.style.color = "#ff4444";
   }
 }
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 let particles = [];
-function launchFireworks() {
-  for (let i = 0; i < 40; i++) {
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+function createFireworks() {
+  for (let i = 0; i < 100; i++) {
     particles.push({
       x: canvas.width / 2,
       y: canvas.height / 2,
-      angle: Math.random() * 2 * Math.PI,
-      speed: Math.random() * 5 + 2,
-      radius: Math.random() * 3 + 2,
-      life: 60
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 12,
+      life: 80
     });
   }
 }
 function animateFireworks() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach((p, i) => {
-    p.x += Math.cos(p.angle) * p.speed;
-    p.y += Math.sin(p.angle) * p.speed;
+  particles.forEach((p, index) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.08;
     p.life--;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
-    ctx.fillStyle = "hsl(" + (Math.random() * 360) + ",100%,50%)";
+    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
     ctx.fill();
-    if (p.life <= 0) particles.splice(i, 1);
+    if (p.life <= 0) {
+      particles.splice(index, 1);
+    }
   });
   requestAnimationFrame(animateFireworks);
 }
 animateFireworks();
-document.getElementById("startBtn").addEventListener("click", () => {
-  openFullscreen();
-  document.getElementById("startBtn").style.display = "none";
-  current = 0;
-  loadQuestion();
-});
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
 </script>
 </body>
 </html>
