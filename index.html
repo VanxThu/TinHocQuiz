@@ -128,31 +128,11 @@ h1 {
   min-height: 35px;
   margin-top: 20px;
 }
-#credit {
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  width: 100%;
-  text-align: center;
+.credit {
+  margin-top: 35px;
   font-size: 18px;
   font-style: italic;
   color: #aaa;
-}
-#video-container {
-  display: none;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-}
-#video-container video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 #fireworks {
   position: fixed;
@@ -161,6 +141,71 @@ h1 {
   height: 100%;
   pointer-events: none;
   z-index: 9998;
+}
+#thanks-container {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(-45deg, #160b1d, #24102e, #10091a, #29112f);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  z-index: 9999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.thanks-title {
+  font-size: 100px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  margin-bottom: 35px;
+  text-shadow: 0 0 15px rgba(255,255,255,0.6), 0 0 35px rgba(255,255,255,0.3);
+  animation: thanksTitle 1.2s ease-out;
+}
+.thanks-text {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 10px 0;
+  animation: thanksText 1.5s ease-out;
+}
+@keyframes thanksTitle {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes thanksText {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 700px) {
+  h1 {
+    font-size: 30px;
+  }
+  #question {
+    font-size: 22px;
+  }
+  .answer {
+    font-size: 18px;
+    padding: 15px;
+  }
+  .thanks-title {
+    font-size: 65px;
+  }
+  .thanks-text {
+    font-size: 24px;
+  }
 }
 </style>
 </head>
@@ -173,13 +218,13 @@ h1 {
 <div id="answers"></div>
 <p id="feedback" class="feedback"></p>
 </div>
-<div id="credit">✨ Cre by Haii Phong ✨</div>
+<div class="credit">✨ Cre by Haii Phong ✨</div>
 </div>
 <canvas id="fireworks"></canvas>
-<div id="video-container">
-<video id="end-video" controls>
-<source src="2e089e27-e974-4727-91dd-c722a4c1863f.mp4" type="video/mp4">
-</video>
+<div id="thanks-container">
+<div class="thanks-title">THANKS</div>
+<div class="thanks-text">Cám ơn các bạn đã trả lời câu hỏi</div>
+<div class="thanks-text">Tạm biệt và hẹn gặp lại</div>
 </div>
 <script>
 const questions = [
@@ -291,8 +336,7 @@ const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answers");
 const feedbackEl = document.getElementById("feedback");
 const quizContainer = document.getElementById("quiz-container");
-const videoContainer = document.getElementById("video-container");
-const endVideo = document.getElementById("end-video");
+const thanksContainer = document.getElementById("thanks-container");
 startBtn.addEventListener("click", async () => {
   startBtn.style.display = "none";
   quiz.style.display = "block";
@@ -335,8 +379,7 @@ function checkAnswer(answer) {
         loadQuestion();
       } else {
         quizContainer.style.display = "none";
-        videoContainer.style.display = "flex";
-        endVideo.play().catch(() => {});
+        thanksContainer.style.display = "flex";
       }
     }, 900);
   } else {
