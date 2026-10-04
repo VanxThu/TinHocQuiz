@@ -16,9 +16,9 @@
     margin: 0;
   }
   @keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
   .quiz-container {
     background: rgba(0, 0, 0, 0.85);
@@ -39,8 +39,23 @@
   #question {
     font-size: 28px;
     font-weight: bold;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 25px;
     line-height: 1.4;
+    transform: scale(1);
+    transform-origin: center center;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.45s ease;
+    will-change: transform;
+    position: relative;
+    z-index: 3;
+    overflow: visible;
+  }
+  #question:hover {
+    transform: scale(1.08);
+    text-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 18px rgba(255,255,255,0.3);
   }
   .answer {
     display: block;
@@ -87,8 +102,10 @@
   }
   canvas {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 1;
   }
@@ -102,10 +119,11 @@
     color: white;
     font-weight: bold;
     margin-bottom: 20px;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.3s ease;
   }
   #startBtn:hover {
     background: #e68900;
+    transform: scale(1.05);
   }
   .credit {
     margin-top: 25px;
@@ -116,98 +134,136 @@
 </style>
 </head>
 <body>
-
 <canvas id="fireworks"></canvas>
 <div class="quiz-container">
   <h1>Quiz: An toàn trong không gian mạng</h1>
-  <button id="startBtn">🚀 Bắt đầu Quiz </button>
+  <button id="startBtn">🚀 Bắt đầu Quiz</button>
   <p id="question"></p>
   <div id="answers"></div>
   <p id="feedback" class="feedback"></p>
   <p class="credit">✨ Cre by Haii Phong ✨</p>
 </div>
-
-<!-- Video ẩn ban đầu -->
 <div id="videoSection" style="margin-top:30px; text-align:center; display:none;">
   <video width="800" controls autoplay loop muted>
     <source src="2e089e27-e974-4727-91dd-c722a4c1863f.mp4" type="video/mp4">
     Trình duyệt không hỗ trợ video.
   </video>
 </div>
-
 <script>
-// ===== DANH SÁCH CÂU HỎI =====
 const questions = [
   {
     q: "Câu 1: Theo tài liệu, thông tin cá nhân bao gồm những gì?",
-    answers: ["B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng.", "C. Sở thích cá nhân và thói quen sinh hoạt.", "A. Chỉ bao gồm họ tên và địa chỉ nhà.", "D. Các phần mềm được cài đặt trên máy tính."],
+    answers: [
+      "A. Chỉ bao gồm họ tên và địa chỉ nhà.",
+      "B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng.",
+      "C. Sở thích cá nhân và thói quen sinh hoạt.",
+      "D. Các phần mềm được cài đặt trên máy tính."
+    ],
     correct: "B. Tên tuổi, số điện thoại, tài khoản email, tài khoản ngân hàng và các tài khoản của các ứng dụng trên mạng."
   },
   {
     q: "Câu 2: Đâu là một trong các biện pháp an toàn để bảo vệ thông tin cá nhân?",
-    answers: ["A. Ghi chép thông tin cá nhân ở bất cứ nơi nào bạn muốn.", "B. Truy cập wifi công cộng thoải mái vì dữ liệu luôn được mã hoá.", "C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền.", "D. Chia sẻ mật khẩu cho nhiều người để tránh quên."],
+    answers: [
+      "A. Ghi chép thông tin cá nhân ở bất cứ nơi nào bạn muốn.",
+      "B. Truy cập wifi công cộng thoải mái vì dữ liệu luôn được mã hoá.",
+      "C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền.",
+      "D. Chia sẻ mật khẩu cho nhiều người để tránh quên."
+    ],
     correct: "C. Cẩn trọng khi truy cập mạng qua wifi công cộng vì hầu hết những trạm wifi công cộng không mã hoá thông tin khi truyền."
   },
   {
-    q: "Trận đánh nào được coi là bước ngoặt trên mặt trận Xô-Đức?",
-    answers: ["Trận Stalingrad", "Trận Berlin", "Trận Moskva", "Trận Kursk"],
-    correct: "Trận Stalingrad"
+    q: "Câu 3: Hành vi nào sau đây được coi là bắt nạt trên không gian mạng ở mức độ cao?",
+    answers: [
+      "A. Xỉ vả, lăng nhục.",
+      "B. Đe doạ tung thông tin cá nhân, đưa tin bịa đặt, vu khống, thậm chí tống tiền hoặc ép buộc làm điều xấu.",
+      "C. Không trả lời tin nhắn trên các diễn đàn.",
+      "D. Kết bạn dễ dãi qua mạng."
+    ],
+    correct: "B. Đe doạ tung thông tin cá nhân, đưa tin bịa đặt, vu khống, thậm chí tống tiền hoặc ép buộc làm điều xấu."
   },
   {
-    q: "Thế chiến II kết thúc vào năm nào?",
-    answers: ["1945", "1940", "1939", "1944"],
-    correct: "1945"
+    q: "Câu 4: Tác hại nghiêm trọng đến sức khỏe của việc \"nghiện mạng\" (đặc biệt là nghiện chơi game) đã được nhắc đến là gì?",
+    answers: [
+      "A. Mắc các bệnh về mắt do nhìn màn hình quá lâu.",
+      "B. Bị lừa đảo mất toàn bộ tài sản.",
+      "C. Đã từng có thanh niên chơi trò chơi điện tử liên tục nhiều ngày và đột quỵ ngay trên bàn máy tính.",
+      "D. Làm hỏng các phần mềm khác trong máy tính."
+    ],
+    correct: "C. Đã từng có thanh niên chơi trò chơi điện tử liên tục nhiều ngày và đột quỵ ngay trên bàn máy tính."
   },
   {
-    q: "Hậu quả lớn nhất của Thế chiến II là gì?",
-    answers: ["Hơn 60 triệu người chết", "Khủng hoảng kinh tế toàn cầu", "Phát minh vũ khí hạt nhân", "Mỹ trở thành siêu cường"],
-    correct: "Hơn 60 triệu người chết"
+    q: "Câu 5: Phần mềm độc hại (malware) được định nghĩa như thế nào?",
+    answers: [
+      "A. Là những phần mềm được viết ra với ý đồ xấu, gây hại cho người dùng.",
+      "B. Là phần mềm giúp bảo vệ thông tin cá nhân trên mạng.",
+      "C. Là một loại virus máy tính lây lan qua wifi.",
+      "D. Là phần mềm giúp tăng tốc độ của hệ điều hành."
+    ],
+    correct: "A. Là những phần mềm được viết ra với ý đồ xấu, gây hại cho người dùng."
   },
   {
-    q: "Quốc gia nào bị Mỹ ném bom nguyên tử vào năm 1945?",
-    answers: ["Nhật Bản", "Đức", "Ý", "Liên Xô"],
-    correct: "Nhật Bản"
+    q: "Câu 6: Đặc điểm nào dưới đây là của virus máy tính?",
+    answers: [
+      "A. Là một phần mềm hoàn chỉnh có thể hoạt động độc lập.",
+      "B. Chỉ nhằm chiếm quyền sử dụng máy tính, ít chú trọng tính năng lây nhiễm.",
+      "C. Không phải là các phần mềm hoàn chỉnh, mà chỉ là các đoạn mã độc và phải gắn với một phần mềm mới phát tác và lây lan được.",
+      "D. Là phần mềm ngầm ghi lại hoạt động của bàn phím."
+    ],
+    correct: "C. Không phải là các phần mềm hoàn chỉnh, mà chỉ là các đoạn mã độc và phải gắn với một phần mềm mới phát tác và lây lan được."
   },
   {
-    q: "Ai là lãnh đạo của Đức trong Thế chiến II?",
-    answers: ["Adolf Hitler", "Joseph Stalin", "Winston Churchill", "Benito Mussolini"],
-    correct: "Adolf Hitler"
+    q: "Câu 7: Trong các loại phần mềm nội gián (Trojan), phần mềm nào có chức năng ngầm ghi hoạt động của bàn phím và chuột để tìm hiểu người sử dụng máy làm gì?",
+    answers: [
+      "A. Spyware (phần mềm gián điệp)",
+      "B. Keylogger",
+      "C. Backdoor",
+      "D. Rootkit"
+    ],
+    correct: "B. Keylogger"
   },
   {
-    q: "Nước nào thuộc phe Đồng minh?",
-    answers: ["Liên Xô", "Đức", "Ý", "Nhật Bản"],
-    correct: "Liên Xô"
+    q: "Câu 8: Sâu WannaCry (2017) đã gây ra thảm hoạ gì?",
+    answers: [
+      "A. Lừa để lây rất hiệu quả và gây thiệt hại hơn 1 tỉ đô la.",
+      "B. Chiếm quyền các máy chủ Windows trong 10 ngày, gây thiệt hại khoảng 2 tỉ đô la.",
+      "C. Tống tiền bằng cách mã hoá toàn bộ thông tin có trên đĩa cứng và đòi tiền chuộc mới cho phần mềm hoá giải.",
+      "D. Ăn trộm toàn bộ thông tin trong email của người dùng."
+    ],
+    correct: "C. Tống tiền bằng cách mã hoá toàn bộ thông tin có trên đĩa cứng và đòi tiền chuộc mới cho phần mềm hoá giải."
   },
   {
-    q: "Hội nghị Yalta (1945) có sự tham gia của ba cường quốc nào?",
-    answers: ["Mỹ - Liên Xô - Anh", "Mỹ - Đức - Ý", "Anh - Pháp - Đức", "Mỹ - Nhật - Ý"],
-    correct: "Mỹ - Liên Xô - Anh"
+    q: "Câu 9: Hình thức tấn công \"từ chối dịch vụ\" (DOS) được thực hiện như thế nào?",
+    answers: [
+      "A. Cài đặt ngầm một đường cửa sau để chiếm quyền máy tính.",
+      "B. Xóa toàn bộ dữ liệu trên ổ cứng để hệ thống tê liệt.",
+      "C. Gửi email chứa liên kết lừa đảo đến hàng triệu người.",
+      "D. Các phần mềm độc hại nhận lệnh truy cập đồng thời vào một máy chủ định trước, gây quá tải, làm tê liệt máy chủ."
+    ],
+    correct: "D. Các phần mềm độc hại nhận lệnh truy cập đồng thời vào một máy chủ định trước, gây quá tải, làm tê liệt máy chủ."
   },
   {
-    q: "Ngày 2/9/1945 gắn liền với sự kiện gì?",
-    answers: ["Nhật Bản đầu hàng vô điều kiện", "Đức đầu hàng", "Hội nghị Potsdam", "Trận Berlin kết thúc"],
-    correct: "Nhật Bản đầu hàng vô điều kiện"
+    q: "Câu 10: Để phòng ngừa phần mềm độc hại, tài liệu khuyên KHÔNG NÊN làm hành động nào sau đây?",
+    answers: [
+      "A. Cẩn thận trọng khi chép các tệp chương trình hay dữ liệu từ ổ cứng rời, thẻ nhớ.",
+      "B. Tải và sử dụng các phần mềm bẻ khoá cho lấy tự do trên mạng (vì chúng thường bị gắn mã độc).",
+      "C. Sử dụng các phần mềm phòng chống phần mềm độc hại.",
+      "D. Gọi điện xác minh với bạn bè nếu nhận được thư yêu cầu nháy vào liên kết."
+    ],
+    correct: "B. Tải và sử dụng các phần mềm bẻ khoá cho lấy tự do trên mạng (vì chúng thường bị gắn mã độc)."
   }
 ];
-
 let current = 0;
-
-// ===== FULLSCREEN =====
 function openFullscreen() {
   const elem = document.documentElement;
   if (elem.requestFullscreen) elem.requestFullscreen();
   else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
   else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 }
-
-// ===== LOAD CÂU HỎI =====
 function loadQuestion() {
   const q = questions[current];
   document.getElementById("question").innerText = q.q;
-
-  // Xáo trộn đáp án
-  let shuffled = [...q.answers].sort(() => Math.random() - 0.5);
-
+  let shuffled = [...q.answers];
+  shuffled.sort(() => Math.random() - 0.5);
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
   shuffled.forEach(ans => {
@@ -217,11 +273,8 @@ function loadQuestion() {
     btn.onclick = () => checkAnswer(btn, ans);
     answersDiv.appendChild(btn);
   });
-
   document.getElementById("feedback").style.display = "none";
 }
-
-// ===== KIỂM TRA ĐÁP ÁN =====
 function checkAnswer(button, ans) {
   const feedback = document.getElementById("feedback");
   if (ans === questions[current].correct) {
@@ -230,7 +283,6 @@ function checkAnswer(button, ans) {
     feedback.className = "feedback correct";
     feedback.style.display = "block";
     launchFireworks();
-
     setTimeout(() => {
       current++;
       if (current < questions.length) {
@@ -239,8 +291,6 @@ function checkAnswer(button, ans) {
         document.getElementById("question").innerText = "🎉 Bạn đã hoàn thành tất cả câu hỏi!";
         document.getElementById("answers").innerHTML = "";
         feedback.style.display = "none";
-
-        // Hiện video
         document.getElementById("videoSection").style.display = "block";
       }
     }, 1500);
@@ -249,24 +299,19 @@ function checkAnswer(button, ans) {
     feedback.innerText = "✘ Sai rồi, thử lại!";
     feedback.className = "feedback wrong";
     feedback.style.display = "block";
-
     setTimeout(() => button.classList.remove("wrong"), 700);
   }
 }
-
-// ===== PHÁO HOA =====
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
 let particles = [];
-
 function launchFireworks() {
   for (let i = 0; i < 40; i++) {
     particles.push({
-      x: canvas.width/2,
-      y: canvas.height/2,
+      x: canvas.width / 2,
+      y: canvas.height / 2,
       angle: Math.random() * 2 * Math.PI,
       speed: Math.random() * 5 + 2,
       radius: Math.random() * 3 + 2,
@@ -274,30 +319,30 @@ function launchFireworks() {
     });
   }
 }
-
 function animateFireworks() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach((p, i) => {
     p.x += Math.cos(p.angle) * p.speed;
     p.y += Math.sin(p.angle) * p.speed;
     p.life--;
-
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
     ctx.fillStyle = "hsl(" + (Math.random() * 360) + ",100%,50%)";
     ctx.fill();
-
     if (p.life <= 0) particles.splice(i, 1);
   });
   requestAnimationFrame(animateFireworks);
 }
 animateFireworks();
-
-// ===== START QUIZ =====
 document.getElementById("startBtn").addEventListener("click", () => {
   openFullscreen();
   document.getElementById("startBtn").style.display = "none";
+  current = 0;
   loadQuestion();
+});
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
 </script>
 </body>
